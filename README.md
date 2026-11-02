@@ -91,7 +91,7 @@ Edited meshes are stored in `.aztec` files (`-prim custom`), so saving, loading 
 
 Notes: Z-up files are rotated to Y-up, a material change inside one OBJ object starts a new object (a mesh carries one material), and a mesh with several FBX materials becomes one object per material. Aztec stores UVs as a generated projection (UV Mode), so imported UV layouts are not kept; exports write the generated UVs. Cameras, lights, skin weights and blend shapes are not exported.
 
-## Added in the Maya 2009 audit
+## Added in the Maya 2009 style audit
 
 - **Primitives:** Create > Polygon Primitives > Cone, Torus (`polyCone`, `polyTorus`), with the same live history as the other primitives.
 - **Nonlinear deformers** (Animation menu set > Deform > Nonlinear): Bend, Twist, Flare, Squash, Sine. Each one is a history node (`bend1`, `twist1`, ...) whose bounds, axis and amounts are editable and keyable in the Channel Box. `nonLinear -type twist -endAngle 90`, or `bend`, `twist`, `flare`, `squash`, `sine` directly.
@@ -140,7 +140,7 @@ Create > Lights: Point, Directional, **Spot**, **Ambient** and **Area**. Select 
 
 Click a key in the Time Slider (Shift adds, drag moves). **Right-click** the slider for **Copy**, **Cut**, **Delete**, **Paste at Current Time** and **Paste Here** (the frame under the cursor), or press Ctrl+C / Ctrl+V while the pointer is over it. Keys go back to the channels they came from; if you select another object first, they go to the same-named channels of that object. In scripts: `copyKey -time "1:24" ball`, `pasteKey -time 60 ball2`, `cutKeys`.
 
-## More Maya 2009 features
+## More Maya 2009 like features
 
 - **Constrain menu** (Animation set): Point, Orient, Scale, Aim and Parent constraints with Maintain Offset and per-target weights (`pointConstraint -mo targetA targetB driven`). A constraint is a node under the driven object; edit its weights in the Attribute Editor or animate them. **Locators** (Create > Locator, `spaceLocator`) are the usual targets.
 - **Set Driven Key** (Animate > Set Driven Key..., `setDrivenKeyframe -cd door.rotateY -dv 0 -v 0 knob.translateX`): drive one attribute from another through a curve.
@@ -180,7 +180,7 @@ Every object has a base material and mapping. Faces can have their own: a group 
 
 ## Workspace and transform foundations (Maya 2009 book, Phase 1)
 
-Following *Learning Autodesk Maya 2009 Foundation*: the plan is in `docs/PHASES.md`, the audit of this phase in `docs/PHASE1_AUDIT.md`.
+Following *Learning Autodesk Maya Foundation*: the plan is in `docs/PHASES.md`, the audit of this phase in `docs/PHASE1_AUDIT.md`.
 
 - **Projects.** File > Project... creates (`project -new PATH`) or selects a project folder with `scenes/`, `images/`, `sourceimages/` and more. A bare scene name opens from and saves to `scenes/`; image files are stored relative to the project; the Open and Assign Color Map dialogs start in the right folder.
 - **Pivots.** Rotation and scale happen around the pivot. **Modify > Center Pivot**, **Edit Pivot** (Insert key, or the Pivot button: the Move handles then move the pivot, not the object) and Reset Pivot; the manipulators sit at the pivot; Display > Transform Display shows pivots and selection handles. `xform -cp`, `xform -piv x y z`, `xform -q -ws -rp`.
