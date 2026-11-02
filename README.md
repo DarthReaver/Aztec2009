@@ -2,6 +2,28 @@
 
 A Maya 2009 style 3D animation tool for Linux, written in Rust. It opens as a normal desktop window with a smooth, high resolution viewport, and it still has a terminal mode and a scripting shell.
 
+## Screenshots
+
+The full workspace, with a polygon selected and its Channel Box on the right:
+
+![Aztec 2009 workspace](docs/screenshots/workspace.png)
+
+Four view layout (top, front, side, perspective):
+
+![Four view layout](docs/screenshots/four-view.png)
+
+The tour scene from `docs/examples/tour.mel`: NURBS, a skinned leg with an IK handle, Paint Effects grass, particles, a checker textured crate and an animation timeline.
+
+![Tour scene in the workspace](docs/screenshots/tour-scene.png)
+
+Viewport at high resolution (`./aztec2009 -f tour.aztec --snapshot tour.png 1600x900`):
+
+![High resolution viewport](docs/screenshots/viewport-tour.png)
+
+Built-in ray tracer with shadows (`rayRender -w 960 -h 540 -q 2`):
+
+![Ray traced render](docs/screenshots/raytrace.png)
+
 ## The book
 
 The program follows *Learning Autodesk Maya 2009 Foundation* lesson by lesson (see `docs/FINAL_AUDIT.md`). `docs/examples/tour.mel` is a script that visits every project of the book: `./aztec2009 -c docs/examples/tour.mel`.
