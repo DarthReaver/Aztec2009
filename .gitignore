@@ -1,0 +1,9 @@
+/target
+*.aztec
+frame_*.txt
+passes_*.txt
+dist/
+!examples/*.aztec
+/aztec2009
+/aztec2009.exe
+/reference/

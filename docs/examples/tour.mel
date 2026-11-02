@@ -1,0 +1,85 @@
+// A tour of the whole program, one stop per project of "Learning Autodesk Maya 2009 Foundation".
+// Run it with:  ./aztec2009 -c docs/examples/tour.mel     (images and the scene go to the project folder, see project -q)
+// To run it in a project:  ./aztec2009 -e "project -new tourProject" -c ...  (or set the project first inside your own script).
+
+// ---- Project 1: the workspace, polygons, textures (Lessons 1-8)
+file -new;
+polyCube -name crate -w 2 -h 2 -d 2;
+polyExtrudeFacet -ltz 0.5 crate.f[2];
+polySmooth -dv 1 crate;
+polyProjection -type planar -md y crate;
+shadingNode -asShader blinn -name woodM;
+shadingNode -asTexture checker -name checks;
+connectAttr checks.outColor woodM.color;
+assignMaterial woodM crate;
+sculpt -op pull -r 0.8 -md 0.2 -stroke "0 1.5 0 0.4 1.5 0";
+
+// ---- Project 2: NURBS (Lessons 5, 15, 16)
+curve -d 3 -p 0 0 0 -p 1 1 0 -p 1.5 2 0 -p 1 3 0 -n profile;
+revolve -ax 0 1 0 profile;
+move 6 0 0 revolvedSurface1;
+sphere -n globe -r 1; move -6 1 0 globe;
+
+// ---- Project 3: the character rig (Lessons 9-13, 17)
+select -cl;
+joint -p 0 0 -8 -n hip;
+joint -p 0 2 -8 -n knee;
+joint -p 0 4 -8 -n foot;
+polyCylinder -name leg -h 4 -r 0.4 -sx 12; move 0 2 -8 leg;
+select hip leg; bindSkin -smooth;
+ikHandle -sj hip -ee foot -sol ikRPsolver -n legIK;
+character -n actor hip;
+setCurrentCharacter actor;
+polySphere -name headA -r 0.5; polySphere -name headB -r 0.5; move 0 0.5 0 headB;
+blendShape headB headA;
+
+// ---- Project 4: animation, deformers, paint effects (Lessons 14, 18, 19, 22)
+playbackOptions -min 1 -max 120;
+setKeyframe -t 1 -v 0 crate.translateX;
+setKeyframe -t 60 -v 5 crate.translateX;
+setKeyframe -t 120 -v 0 crate.translateX;
+keyTangent -itt flat -ott flat -t "1:120" crate.translateX;
+setInfinity -poi cycle crate.translateX;
+polyPlane -name ground -w 30 -h 30 -sx 12; move 0 -1 0 ground;
+select ground; nonLinear -type wave -axis y -amplitude 0.2 -wavelength 3;
+curve -d 1 -p -8 0 5 -p 0 0 8 -p 8 0 5 -n path;
+polyCube -name cart; pathAnimation -fractionMode 1 -follow 1 -followAxis z -upAxis y -startTimeU 1 -endTimeU 120 cart path;
+paintBrush -preset grassBermuda; makePaintable ground; pfxStroke -b grassBermuda -surface ground -pts "-4 5 -4 4 5 -4";
+cameraAim -n shot;
+lattice -dv 2 3 2 headA;
+
+// ---- Project 4: lighting and rendering (Lessons 20, 21)
+pointLight -name lamp -i 1.2; move 4 8 6 lamp;
+setAttr lampShape.lightGlow 1;
+setAttr shot.translateX 0; setAttr shot.translateY 6; setAttr shot.translateZ 22;
+renderSettings -w 160 -h 90 -quality preview -renderer software -s 1 -e 2 -prefix tour;
+renderLayer -create props; renderLayer -add props crate cart lamp;
+renderLayer -passes props "diffuse mask";
+
+// ---- Project 4: dynamics and non-linear animation (Lessons 23-26)
+polySphere -name ball -r 0.5; move 0 8 0 ball;
+select ball; rigidBody -active -b 0.4; gravity;
+select ground; rigidBody -passive;
+particleEffect -type smoke;
+setKeyframe -t 1 -v 0 hip.translateX; setKeyframe -t 40 -v 3 hip.translateX;
+clip -create walk -character actor -t "1:60";
+setKeyframe -t 1 -v 0 headA.translateY;
+
+// ---- Project 4: MEL (Lesson 27)
+spaceLocator -n lookAt; addAttr -ln blink -at float -min 0.1 -max 1 -dv 1 lookAt; setAttr -keyable true lookAt.blink;
+expression -n blinkExpression -s "headB.sy = lookAt.blink";
+global proc tourWindow() {
+	if (`window -ex tourWin`) deleteUI tourWin;
+	window -title "Tour" tourWin;
+	columnLayout -rs 4;
+	floatSliderGrp -label "Blink" -minValue 0.1 -maxValue 1 -value 1 blinkSlider;
+	button -label "Close" -command "deleteUI tourWin" closeBtn;
+	showWindow tourWin;
+}
+tourWindow;
+
+// ---- the end: play, render, save
+currentTime 24;
+renderImage;
+renderImage -layer props -pass mask;
+file -save tour;

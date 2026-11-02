@@ -1,0 +1,20 @@
+pub mod character;
+pub mod constraint;
+pub mod deformers;
+pub mod dynamics;
+pub mod expr;
+pub mod paintfx;
+pub mod trax;
+pub mod graph;
+pub mod lattice;
+pub mod history;
+pub mod nodes;
+pub mod nurbs_nodes;
+pub mod plugs;
+pub mod reference;
+pub mod rig;
+pub mod serialize;
+pub mod skinning;
+pub mod zones;
+
+pub use graph::{NodeId, Scene};

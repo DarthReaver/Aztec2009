@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Aztec 2009
+Comment=Maya 2009 style 3D animation tool
+Exec=/home/reaver/Documents/Programs/Aztec2009/aztec2009 %f
+Icon=/home/reaver/Documents/Programs/Aztec2009/assets/aztec2009.png
+Path=/home/reaver/Documents/Programs/Aztec2009
+Terminal=false
+StartupWMClass=aztec2009
+Categories=Graphics;3DGraphics;

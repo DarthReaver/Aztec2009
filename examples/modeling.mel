@@ -1,0 +1,28 @@
+// Aztec 2009 modeling and scripting demo: procedures, loops, deformers, freeze, bake, export
+global proc buildTower(string $name, int $floors, float $twistDeg) {
+    polyCube -name $name -w 2 -h ($floors * 1.0) -d 2 -sx 12;
+    move 0 ($floors * 0.5) 0 $name;
+    makeIdentity -apply true $name;
+    nonLinear -type twist -startAngle 0 -endAngle $twistDeg $name;
+}
+
+buildTower("tower", 8, 120);
+
+for ($i = 1; $i <= 4; $i++) {
+    polyTorus -name ("ring" + $i) -r (1.5 + $i * 0.4) -sr 0.15;
+    move 0 ($i * 1.6) 0 ("ring" + $i);
+}
+
+polyCone -name roof -r 1.8 -h 1.5;
+move 0 8.75 0 roof;
+
+group -name house tower ring1 ring2 ring3 ring4 roof;
+select house;
+setKeyframe -t 1 -v 0 "house.rotateY";
+setKeyframe -t 48 -v 360 "house.rotateY";
+bakeResults -t "1:48" house;
+
+// Write the result for other applications (needs a writable folder)
+// file -export "house.fbx";
+// file -export "house.obj" -selected;
+print ("the tower has " + `polyEvaluate -f tower` + " faces");

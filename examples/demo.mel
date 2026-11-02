@@ -1,0 +1,34 @@
+// Aztec 2009 demo scene: bouncing ball, stereo camera, nParticles, animation layer
+polySphere -r 2.0 -name "myBall";
+polyCube -w 1.5 -h 1.5 -d 1.5 -name "myBox";
+polyPlane -w 30 -h 30 -sx 4 -name "ground";
+setAttr "myBall.translateY" 4.5;
+setAttr "myBox.translateX" 5;
+getAttr "myBall.translateY";
+
+connectAttr "myBall.translateY" "myBox.translateY";
+setKeyframe -t 1 -v 0.0 "myBall.translateY";
+setKeyframe -t 24 -v 10.0 "myBall.translateY";
+setKeyframe -t 48 -v 0.0 "myBall.translateY";
+
+lambert -name "red" -c 0.9 0.2 0.2;
+assignMaterial "red" "myBall";
+pointLight -name "key" -i 1.1;
+
+stereoCamera -name "rig" -interaxial 0.5 -zeroParallax 14;
+
+animLayer "wobble";
+setKeyframe -t 1 -v 0 -animLayer "wobble" "myBall.translateX";
+setKeyframe -t 24 -v 3 -animLayer "wobble" "myBall.translateX";
+animLayer -e -w 0.5 "wobble";
+
+nParticle -name "sparks" -rate 60 -pos 0 8 0;
+
+currentTime 15;
+getAttr "myBall.translateY";
+getAttr "myBox.translateY";
+getAttr "myBall.translateX";
+stats;
+render -mode anaglyph -out "frame_15.txt";
+render -mode all -out "passes_15.txt" -w 60 -h 30;
+file -save "demo_scene.aztec";
