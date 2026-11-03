@@ -2,10 +2,12 @@
 //! an input thread, and a parser for keys and SGR mouse reports.
 
 use std::io::{Read, Write};
+#[cfg(unix)]
 use std::os::raw::c_ulong;
 use std::sync::mpsc::{channel, Receiver};
 use std::sync::Mutex;
 
+#[cfg(unix)]
 #[repr(C)]
 #[derive(Clone, Copy)]
 struct Termios {
@@ -19,6 +21,7 @@ struct Termios {
     c_ospeed: u32,
 }
 
+#[cfg(unix)]
 #[repr(C)]
 #[derive(Default)]
 struct Winsize {
@@ -28,6 +31,7 @@ struct Winsize {
     ws_ypixel: u16,
 }
 
+#[cfg(unix)]
 extern "C" {
     fn tcgetattr(fd: i32, t: *mut Termios) -> i32;
     fn tcsetattr(fd: i32, actions: i32, t: *const Termios) -> i32;
@@ -35,9 +39,12 @@ extern "C" {
     fn ioctl(fd: i32, request: c_ulong, ...) -> i32;
 }
 
+#[cfg(unix)]
 const TCSANOW: i32 = 0;
+#[cfg(unix)]
 const TIOCGWINSZ: c_ulong = 0x5413;
 
+#[cfg(unix)]
 static ORIGINAL: Mutex<Option<Termios>> = Mutex::new(None);
 
 const ENTER_SEQ: &str = "\x1b[?1049h\x1b[?25l\x1b[?1000h\x1b[?1002h\x1b[?1006h\x1b[2J";
@@ -48,6 +55,7 @@ pub fn restore_terminal() {
     let mut out = std::io::stdout();
     let _ = out.write_all(LEAVE_SEQ.as_bytes());
     let _ = out.flush();
+    #[cfg(unix)]
     if let Ok(mut g) = ORIGINAL.lock() {
         if let Some(t) = g.take() {
             unsafe {
@@ -60,6 +68,13 @@ pub fn restore_terminal() {
 pub struct RawTerm;
 
 impl RawTerm {
+    /// The full screen terminal workspace needs termios, so it is Unix only.
+    #[cfg(not(unix))]
+    pub fn enter() -> std::io::Result<RawTerm> {
+        Err(std::io::Error::other("the terminal workspace is not available on Windows; use the windowed workspace or --shell"))
+    }
+
+    #[cfg(unix)]
     pub fn enter() -> std::io::Result<RawTerm> {
         let mut t = std::mem::MaybeUninit::<Termios>::uninit();
         let rc = unsafe { tcgetattr(0, t.as_mut_ptr()) };
@@ -99,6 +114,13 @@ impl Drop for RawTerm {
 }
 
 /// Terminal size in character cells (columns, rows).
+#[cfg(not(unix))]
+pub fn term_size() -> (usize, usize) {
+    (80, 24)
+}
+
+/// Terminal size in character cells (columns, rows).
+#[cfg(unix)]
 pub fn term_size() -> (usize, usize) {
     let mut ws = Winsize::default();
     let rc = unsafe { ioctl(1, TIOCGWINSZ, &mut ws as *mut Winsize) };

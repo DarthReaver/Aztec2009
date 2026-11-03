@@ -212,7 +212,8 @@ fn main() {
         return;
     }
     let tty = std::io::stdin().is_terminal() && std::io::stdout().is_terminal();
-    let has_display = std::env::var_os("DISPLAY").is_some() || std::env::var_os("WAYLAND_DISPLAY").is_some();
+    // Windows (and macOS) always have a display server; X11 / Wayland only need checking elsewhere.
+    let has_display = cfg!(any(windows, target_os = "macos")) || std::env::var_os("DISPLAY").is_some() || std::env::var_os("WAYLAND_DISPLAY").is_some();
     if !force_tui && !force_shell && has_display {
         session.apply_startup_prefs();
         for l in mel::cmd_mel::run_user_setup(&mut session) {
